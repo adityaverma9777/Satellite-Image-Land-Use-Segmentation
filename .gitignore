@@ -2,6 +2,7 @@
 backend/.venv/
 backend/__pycache__/
 backend/**/*.pyc
+backend/.pytest_cache/
 
 # Backend outputs
 backend/outputs/
@@ -9,11 +10,15 @@ backend/outputs/
 # Node
 frontend/node_modules/
 frontend/dist/
+frontend/.vite/
 
 # OS/editor
 .DS_Store
 Thumbs.db
 .vscode/
 
-# model
-models/best_model.pth
+# model weights
+models/*.pth
+
+# Docker
+*.log

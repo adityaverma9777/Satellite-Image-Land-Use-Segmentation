@@ -59,6 +59,16 @@ def startup_event() -> None:
     print(f"[startup] Model loaded on device: {device}")
 
 
+@app.get("/")
+def root() -> Dict[str, Any]:
+    return {
+        "service": "Satellite Land-Use Segmentation API",
+        "status": "ok",
+        "docs": "/docs",
+        "health": "/health",
+    }
+
+
 @app.get("/health")
 def health() -> Dict[str, Any]:
     return {

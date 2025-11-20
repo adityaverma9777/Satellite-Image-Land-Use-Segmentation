@@ -3,6 +3,33 @@
 Full-stack AI web application for semantic segmentation of satellite imagery into 6 land-use classes:
 Urban, Agriculture, Rangeland, Forest, Water, and Barren.
 
+## Quick Start (Docker)
+
+1. Clone the repo.
+2. Put your trained model at `models/best_model.pth`.
+3. Build and start containers:
+
+```bash
+docker compose up --build
+```
+
+4. Open:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:8000`
+
+To run in detached mode:
+
+```bash
+docker compose up -d --build
+```
+
+To stop the system:
+
+```bash
+docker compose down
+```
+
 ## Project Structure
 
 ```text
@@ -23,6 +50,7 @@ project/
 │   │   └── ...
 ├── models/
 │   └── best_model.pth
+├── docker-compose.yml
 └── README.md
 ```
 
@@ -45,17 +73,6 @@ project/
 - `POST /predict`
 - `POST /metrics/miou`
 - `GET /outputs/{prediction_id}/...` (static files)
-
-### Install and Run
-
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-cd ..
-uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
-```
 
 ## Frontend (React + Leaflet)
 
@@ -92,3 +109,4 @@ VITE_API_BASE_URL=http://127.0.0.1:8000
 - If the uploaded input is georeferenced (GeoTIFF), the backend extracts bounds and preserves spatial metadata for GeoTIFF export.
 - If georeference is unavailable, map overlay uses approximate fallback bounds for visualization only.
 - Model architecture expected by backend loader: U-Net with ResNet-50 encoder and 6 output classes.
+- If a Windows App Control policy blocks local PyTorch DLLs (`WinError 4551`), use Docker mode.
