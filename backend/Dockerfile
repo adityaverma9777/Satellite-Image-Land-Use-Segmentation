@@ -1,5 +1,7 @@
 FROM python:3.10-slim
 
+ARG TORCH_WHL_CHANNEL=cpu
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1
@@ -13,10 +15,17 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN python -m pip install --upgrade pip && \
-    pip install --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements.txt
+        if [ "$TORCH_WHL_CHANNEL" = "cu121" ]; then \
+            pip install --extra-index-url https://download.pytorch.org/whl/cu121 -r /tmp/requirements.txt; \
+        elif [ "$TORCH_WHL_CHANNEL" = "cpu" ]; then \
+            pip install --extra-index-url https://download.pytorch.org/whl/cpu -r /tmp/requirements.txt; \
+        else \
+            pip install -r /tmp/requirements.txt; \
+        fi
 
 COPY backend /app/backend
-COPY models /app/models
+COPY best_model.pth /app/best_model.pth
+COPY map-data /app/map-data
 
 RUN mkdir -p /app/backend/outputs
 

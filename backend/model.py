@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Dict
 
 import segmentation_models_pytorch as smp
 import torch
 
-NUM_CLASSES = 6
+NUM_CLASSES = 4
 ENCODER_NAME = "resnet50"
 
 
@@ -58,6 +59,18 @@ def load_model(weights_path: Path, device: torch.device) -> torch.nn.Module:
         print(f"[model] Warning: missing keys while loading checkpoint: {missing_keys[:10]}")
     if unexpected_keys:
         print(f"[model] Warning: unexpected keys while loading checkpoint: {unexpected_keys[:10]}")
+
+    if device.type == "cuda":
+        model = model.to(memory_format=torch.channels_last)
+
+    compile_pref = os.getenv("TORCH_COMPILE", "0").strip().lower()
+    if compile_pref in {"1", "true", "yes"} and hasattr(torch, "compile"):
+        compile_mode = os.getenv("TORCH_COMPILE_MODE", "reduce-overhead").strip() or "reduce-overhead"
+        try:
+            model = torch.compile(model, mode=compile_mode)
+            print(f"[model] torch.compile enabled (mode={compile_mode}).")
+        except Exception as exc:
+            print(f"[model] torch.compile failed, continuing without compile: {exc}")
 
     model.eval()
     return model

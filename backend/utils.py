@@ -12,23 +12,19 @@ from rasterio.io import MemoryFile
 from rasterio.warp import transform_bounds
 
 CLASS_LABELS = {
-    0: "Urban",
-    1: "Agriculture",
-    2: "Rangeland",
-    3: "Forest",
-    4: "Water",
-    5: "Barren",
+    0: "Class 0",
+    1: "Class 1",
+    2: "Class 2",
+    3: "Class 3",
 }
 
-# RGB colors for each class index 0..5
+# RGB colors for each class index 0..3
 CLASS_COLORS = np.array(
     [
-        [255, 0, 0],      # Urban -> Red
-        [255, 255, 0],    # Agriculture -> Yellow
-        [165, 42, 42],    # Rangeland -> Brown
-        [34, 139, 34],    # Forest -> Green
-        [0, 0, 255],      # Water -> Blue
-        [128, 128, 128],  # Barren -> Gray
+        [255, 0, 0],      # Class 0 -> Red
+        [0, 255, 0],      # Class 1 -> Green
+        [0, 0, 255],      # Class 2 -> Blue
+        [255, 255, 0],    # Class 3 -> Yellow
     ],
     dtype=np.uint8,
 )
@@ -112,7 +108,7 @@ def colorize_mask(mask: np.ndarray) -> np.ndarray:
     if mask.ndim != 2:
         raise ValueError("Mask must be 2D [H, W].")
     if mask.min() < 0 or mask.max() >= len(CLASS_COLORS):
-        raise ValueError("Mask values are outside expected class index range 0..5.")
+        raise ValueError("Mask values are outside expected class index range 0..3.")
 
     return CLASS_COLORS[mask]
 
@@ -171,7 +167,7 @@ def load_label_mask(file_bytes: bytes) -> np.ndarray:
     return array.astype(np.uint8)
 
 
-def compute_miou(pred_mask: np.ndarray, true_mask: np.ndarray, num_classes: int = 6) -> Dict[str, Any]:
+def compute_miou(pred_mask: np.ndarray, true_mask: np.ndarray, num_classes: int = 4) -> Dict[str, Any]:
     if pred_mask.shape != true_mask.shape:
         raise ValueError("Prediction and ground-truth masks must have the same shape.")
 
