@@ -4,3 +4,9 @@ export const API_BASE_URL =
 export function makeApiUrl(path) {
   return new URL(path, API_BASE_URL).toString()
 }
+
+export function makeTemplateApiUrl(pathTemplate) {
+  const base = API_BASE_URL.replace(/\/+$/, '')
+  const path = pathTemplate.startsWith('/') ? pathTemplate : `/${pathTemplate}`
+  return `${base}${path}`
+}
