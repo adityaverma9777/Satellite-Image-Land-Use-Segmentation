@@ -3,11 +3,19 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+      args:
+        TORCH_WHL_CHANNEL: ${TORCH_WHL_CHANNEL:-cpu}
     ports:
       - "8000:8000"
+    environment:
+      MAP_ONLINE_FALLBACK: "true"
+      MODEL_PATH: "/app/best_model (3).pth"
     volumes:
       - ./backend/outputs:/app/backend/outputs
+      - "./best_model (3).pth:/app/best_model (3).pth:ro"
+      - ./best_model.pth:/app/best_model.pth:ro
       - ./models:/app/models:ro
+      - ./map-data:/app/map-data:ro
     restart: unless-stopped
 
   frontend:
